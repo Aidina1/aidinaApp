@@ -3,45 +3,71 @@ package com.aidina.studytracker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aidina.studytracker.ui.theme.StudyTrackerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             StudyTrackerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AppNavigator()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun AppNavigator() {
+    var currentScreen by remember { mutableStateOf("home") }
+
+    when (currentScreen) {
+        "home" -> HomeScreen(
+            onGoToTracker = { currentScreen = "tracker" },
+            onGoToQuote = { currentScreen = "quote" }
+        )
+        "tracker" -> StudyTrackerScreen(onBack = { currentScreen = "home" })
+        "quote" -> QuoteScreen(onBack = { currentScreen = "home" })
+    }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    StudyTrackerTheme {
-        Greeting("Android")
+fun HomeScreen(onGoToTracker: () -> Unit, onGoToQuote: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Welcome, Aidina!", fontSize = 32.sp)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(text = "Your personal study companion", fontSize = 16.sp)
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Button(
+            onClick = onGoToTracker,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Study Tracker")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onGoToQuote,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Daily Quote")
+        }
     }
 }
